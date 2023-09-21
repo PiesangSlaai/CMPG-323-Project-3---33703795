@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Data;
 using Models;
+using Data;
 
 namespace Repositories
 {
-    public class OrderRepository : IGenericRepository<Order>
+    public class OrderRepository
     {
         private readonly SuperStoreContext _context;
 
@@ -18,47 +17,45 @@ namespace Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Order>> GetAllAsync()
+        public async Task<List<Order>> GetAllOrdersAsync()
         {
-            return await _context.Orders.ToListAsync();
+            return await _context.Orders.Include(o => o.Customer).ToListAsync();
         }
 
-        public async Task<IEnumerable<Order>> GetByConditionAsync(Expression<Func<Order, bool>> condition)
+        public async Task<Order> GetOrderByIdAsync(int id)
         {
-            return await _context.Orders.Where(condition).ToListAsync();
+            return await _context.Orders
+                .Include(o => o.Customer)
+                .FirstOrDefaultAsync(m => m.OrderId == id);
         }
 
-        public async Task<Order> GetByIdAsync(object id)
+        public async Task CreateOrderAsync(Order order)
         {
-            return await _context.Orders.FindAsync(id);
-        }
-
-        public async Task CreateAsync(Order entity)
-        {
-            _context.Add(entity);
+            _context.Add(order);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(Order entity)
+        public async Task UpdateOrderAsync(Order order)
         {
-            _context.Update(entity);
+            _context.Update(order);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(object id)
+        public async Task DeleteOrderAsync(int id)
         {
-            var entity = await _context.Orders.FindAsync(id);
-            if (entity != null)
+            var order = await _context.Orders.FindAsync(id);
+            if (order != null)
             {
-                _context.Orders.Remove(entity);
+                _context.Orders.Remove(order);
                 await _context.SaveChangesAsync();
             }
         }
 
-        public bool Exists(Expression<Func<Order, bool>> condition)
+        public bool OrderExists(int id)
         {
-            return _context.Orders.Any(condition);
+            return _context.Orders.Any(e => e.OrderId == id);
         }
     }
 }
+
 

@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Data;
 using Models;
+using Data;
 
 namespace Repositories
 {
-    public class ProductRepository : IGenericRepository<Product>
+    public class ProductRepository
     {
         private readonly SuperStoreContext _context;
 
@@ -18,47 +17,43 @@ namespace Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Product>> GetAllAsync()
+        public async Task<List<Product>> GetAllProductsAsync()
         {
             return await _context.Products.ToListAsync();
         }
 
-        public async Task<IEnumerable<Product>> GetByConditionAsync(Expression<Func<Product, bool>> condition)
+        public async Task<Product> GetProductByIdAsync(int id)
         {
-            return await _context.Products.Where(condition).ToListAsync();
+            return await _context.Products.FirstOrDefaultAsync(m => m.ProductId == id);
         }
 
-        public async Task<Product> GetByIdAsync(object id)
+        public async Task CreateProductAsync(Product product)
         {
-            return await _context.Products.FindAsync(id);
-        }
-
-        public async Task CreateAsync(Product entity)
-        {
-            _context.Add(entity);
+            _context.Add(product);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(Product entity)
+        public async Task UpdateProductAsync(Product product)
         {
-            _context.Update(entity);
+            _context.Update(product);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(object id)
+        public async Task DeleteProductAsync(int id)
         {
-            var entity = await _context.Products.FindAsync(id);
-            if (entity != null)
+            var product = await _context.Products.FindAsync(id);
+            if (product != null)
             {
-                _context.Products.Remove(entity);
+                _context.Products.Remove(product);
                 await _context.SaveChangesAsync();
             }
         }
 
-        public bool Exists(Expression<Func<Product, bool>> condition)
+        public bool ProductExists(int id)
         {
-            return _context.Products.Any(condition);
+            return _context.Products.Any(e => e.ProductId == id);
         }
     }
 }
+
 
