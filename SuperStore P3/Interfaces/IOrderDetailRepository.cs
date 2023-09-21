@@ -13,5 +13,9 @@ namespace Repositories
         Task UpdateOrderDetailAsync(OrderDetail orderDetail);
         Task DeleteOrderDetailAsync(int id);
         bool OrderDetailExists(int id);
+
+        Task<List<Order>> GetAllOrdersAsync();
+        Task<List<Product>> GetAllProductsAsync();
     }
 }
+

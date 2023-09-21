@@ -57,6 +57,18 @@ namespace Repositories
         {
             return _context.OrderDetails.Any(e => e.OrderDetailsId == id);
         }
+
+        // New methods to fetch orders and products
+        public async Task<List<Order>> GetAllOrdersAsync()
+        {
+            return await _context.Orders.ToListAsync();
+        }
+
+        public async Task<List<Product>> GetAllProductsAsync()
+        {
+            return await _context.Products.ToListAsync();
+        }
     }
 }
+
 
