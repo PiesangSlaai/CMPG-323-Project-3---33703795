@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Models;
-using Data;
 using Repositories;
 
 namespace Controllers
@@ -15,9 +14,9 @@ namespace Controllers
     [Authorize]
     public class OrdersController : Controller
     {
-        private readonly OrderRepository _orderRepository;
+        private readonly IOrderRepository _orderRepository;
 
-        public OrdersController(OrderRepository orderRepository)
+        public OrdersController(IOrderRepository orderRepository)
         {
             _orderRepository = orderRepository;
         }
@@ -32,7 +31,7 @@ namespace Controllers
         // GET: Orders/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || !_orderRepository.OrderExists(id.Value))
+            if (id == null)
             {
                 return NotFound();
             }
@@ -49,7 +48,7 @@ namespace Controllers
         // GET: Orders/Create
         public IActionResult Create()
         {
-            // You can add any necessary view data here if needed.
+            // Replace with code to populate ViewData if needed
             return View();
         }
 
@@ -63,15 +62,14 @@ namespace Controllers
                 await _orderRepository.CreateOrderAsync(order);
                 return RedirectToAction(nameof(Index));
             }
-
-            // You can add any necessary view data here if needed.
+            // Replace with code to populate ViewData if needed
             return View(order);
         }
 
         // GET: Orders/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || !_orderRepository.OrderExists(id.Value))
+            if (id == null)
             {
                 return NotFound();
             }
@@ -81,8 +79,7 @@ namespace Controllers
             {
                 return NotFound();
             }
-
-            // You can add any necessary view data here if needed.
+            // Replace with code to populate ViewData if needed
             return View(order);
         }
 
@@ -98,18 +95,31 @@ namespace Controllers
 
             if (ModelState.IsValid)
             {
-                await _orderRepository.UpdateOrderAsync(order);
+                try
+                {
+                    await _orderRepository.UpdateOrderAsync(order);
+                }
+                catch
+                {
+                    if (!_orderRepository.OrderExists(order.OrderId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
                 return RedirectToAction(nameof(Index));
             }
-
-            // You can add any necessary view data here if needed.
+            // Replace with code to populate ViewData if needed
             return View(order);
         }
 
         // GET: Orders/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || !_orderRepository.OrderExists(id.Value))
+            if (id == null)
             {
                 return NotFound();
             }
@@ -133,3 +143,5 @@ namespace Controllers
         }
     }
 }
+
+

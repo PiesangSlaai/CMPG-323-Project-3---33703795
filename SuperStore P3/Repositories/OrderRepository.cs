@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using Data;
+using Repositories;
 
 namespace Repositories
 {
-    public class OrderRepository
+    public class OrderRepository : IOrderRepository
     {
         private readonly SuperStoreContext _context;
 
@@ -24,9 +25,7 @@ namespace Repositories
 
         public async Task<Order> GetOrderByIdAsync(int id)
         {
-            return await _context.Orders
-                .Include(o => o.Customer)
-                .FirstOrDefaultAsync(m => m.OrderId == id);
+            return await _context.Orders.Include(o => o.Customer).FirstOrDefaultAsync(m => m.OrderId == id);
         }
 
         public async Task CreateOrderAsync(Order order)
@@ -57,5 +56,8 @@ namespace Repositories
         }
     }
 }
+
+
+
 
 
