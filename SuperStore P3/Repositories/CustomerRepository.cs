@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using Data;
+using Repositories;
 
 namespace Repositories
 {
-    public class CustomerRepository
+    public class CustomerRepository : ICustomerRepository
     {
         private readonly SuperStoreContext _context;
 
@@ -55,4 +56,5 @@ namespace Repositories
         }
     }
 }
+
 

@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Data;
 using Models;
+using Repositories;
 using Repositories;
 
 namespace Controllers
@@ -15,9 +14,9 @@ namespace Controllers
     [Authorize]
     public class CustomersController : Controller
     {
-        private readonly CustomerRepository _customerRepository;
+        private readonly ICustomerRepository _customerRepository;
 
-        public CustomersController(CustomerRepository customerRepository)
+        public CustomersController(ICustomerRepository customerRepository)
         {
             _customerRepository = customerRepository;
         }
@@ -32,7 +31,7 @@ namespace Controllers
         // GET: Customers/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || !_customerRepository.CustomerExists(id.Value))
+            if (id == null)
             {
                 return NotFound();
             }
@@ -68,7 +67,7 @@ namespace Controllers
         // GET: Customers/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || !_customerRepository.CustomerExists(id.Value))
+            if (id == null)
             {
                 return NotFound();
             }
@@ -78,7 +77,6 @@ namespace Controllers
             {
                 return NotFound();
             }
-
             return View(customer);
         }
 
@@ -94,7 +92,21 @@ namespace Controllers
 
             if (ModelState.IsValid)
             {
-                await _customerRepository.UpdateCustomerAsync(customer);
+                try
+                {
+                    await _customerRepository.UpdateCustomerAsync(customer);
+                }
+                catch (Exception)
+                {
+                    if (!_customerRepository.CustomerExists(customer.CustomerId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
                 return RedirectToAction(nameof(Index));
             }
             return View(customer);
@@ -103,7 +115,7 @@ namespace Controllers
         // GET: Customers/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || !_customerRepository.CustomerExists(id.Value))
+            if (id == null)
             {
                 return NotFound();
             }
@@ -127,6 +139,7 @@ namespace Controllers
         }
     }
 }
+
 
 
 
