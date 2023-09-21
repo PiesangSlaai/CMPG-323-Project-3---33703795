@@ -16,6 +16,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<OrderRepository>();
 builder.Services.AddScoped<CustomerRepository>();
+builder.Services.AddScoped<ProductRepository>();
 
 var app = builder.Build();
 
