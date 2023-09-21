@@ -1,0 +1,6 @@
+references: 
+1. Naik, K .(2023) 'Design Patterns In C# .NET', C# Corner, 13 July. Available at: https://www.c-sharpcorner.com/UploadFile/bd5be5/design-patterns-in-net/
+2. Velayutham, M .(2012) 'Architectural Patterns in .NET', C# Corner, 13 May. Available at: https://www.c-sharpcorner.com/uploadfile/babu_2082/architectural-patterns-in-net/
+3. (OpenAI, 2023)
+4. Patrick God (2022) The Repository Pattern explained for EVERYONE (with Code Examples). Available at: https://www.youtube.com/watch?v=Wiy54682d1w&t=465s
+5. Thumb IKR - Programming Examples (2020) Use Generic Type Controller and Interface (Repository Pattern) | ASP.NET Core Web API | Basic CRUD. Available at: https://www.youtube.com/watch?v=gb-wA2HDSYw&t=413s
