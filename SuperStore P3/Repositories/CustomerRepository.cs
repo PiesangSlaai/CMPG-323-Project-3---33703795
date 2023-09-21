@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Models;
 using Data;
+using Models;
 
 namespace Repositories
 {
-    public class CustomerRepository
+    public class CustomerRepository : IGenericRepository<Customer>
     {
         private readonly SuperStoreContext _context;
 
@@ -17,41 +18,46 @@ namespace Repositories
             _context = context;
         }
 
-        public async Task<List<Customer>> GetAllCustomersAsync()
+        public async Task<IEnumerable<Customer>> GetAllAsync()
         {
             return await _context.Customers.ToListAsync();
         }
 
-        public async Task<Customer> GetCustomerByIdAsync(int id)
+        public async Task<IEnumerable<Customer>> GetByConditionAsync(Expression<Func<Customer, bool>> condition)
         {
-            return await _context.Customers.FirstOrDefaultAsync(m => m.CustomerId == id);
+            return await _context.Customers.Where(condition).ToListAsync();
         }
 
-        public async Task CreateCustomerAsync(Customer customer)
+        public async Task<Customer> GetByIdAsync(object id)
         {
-            _context.Add(customer);
+            return await _context.Customers.FindAsync(id);
+        }
+
+        public async Task CreateAsync(Customer entity)
+        {
+            _context.Add(entity);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateCustomerAsync(Customer customer)
+        public async Task UpdateAsync(Customer entity)
         {
-            _context.Update(customer);
+            _context.Update(entity);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteCustomerAsync(int id)
+        public async Task DeleteAsync(object id)
         {
-            var customer = await _context.Customers.FindAsync(id);
-            if (customer != null)
+            var entity = await _context.Customers.FindAsync(id);
+            if (entity != null)
             {
-                _context.Customers.Remove(customer);
+                _context.Customers.Remove(entity);
                 await _context.SaveChangesAsync();
             }
         }
 
-        public bool CustomerExists(int id)
+        public bool Exists(Expression<Func<Customer, bool>> condition)
         {
-            return _context.Customers.Any(e => e.CustomerId == id);
+            return _context.Customers.Any(condition);
         }
     }
 }
