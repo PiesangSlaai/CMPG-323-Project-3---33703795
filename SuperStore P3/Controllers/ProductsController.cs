@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Data;
 using Models;
 using Repositories;
 
@@ -15,9 +13,9 @@ namespace Controllers
     [Authorize]
     public class ProductsController : Controller
     {
-        private readonly ProductRepository _productRepository;
+        private readonly IProductRepository _productRepository;
 
-        public ProductsController(ProductRepository productRepository)
+        public ProductsController(IProductRepository productRepository)
         {
             _productRepository = productRepository;
         }
@@ -32,7 +30,7 @@ namespace Controllers
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || !_productRepository.ProductExists(id.Value))
+            if (id == null)
             {
                 return NotFound();
             }
@@ -68,7 +66,7 @@ namespace Controllers
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || !_productRepository.ProductExists(id.Value))
+            if (id == null)
             {
                 return NotFound();
             }
@@ -78,7 +76,6 @@ namespace Controllers
             {
                 return NotFound();
             }
-
             return View(product);
         }
 
@@ -94,7 +91,21 @@ namespace Controllers
 
             if (ModelState.IsValid)
             {
-                await _productRepository.UpdateProductAsync(product);
+                try
+                {
+                    await _productRepository.UpdateProductAsync(product);
+                }
+                catch (Exception)
+                {
+                    if (!_productRepository.ProductExists(product.ProductId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
@@ -103,7 +114,7 @@ namespace Controllers
         // GET: Products/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || !_productRepository.ProductExists(id.Value))
+            if (id == null)
             {
                 return NotFound();
             }
@@ -127,5 +138,6 @@ namespace Controllers
         }
     }
 }
+
 
 

@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using Data;
+using Repositories;
 
 namespace Repositories
 {
-    public class ProductRepository
+    public class ProductRepository : IProductRepository
     {
         private readonly SuperStoreContext _context;
 
@@ -55,5 +56,6 @@ namespace Repositories
         }
     }
 }
+
 
 
